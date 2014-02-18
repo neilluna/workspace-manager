@@ -1,5 +1,5 @@
 Global $title = "Workspace Manager"
-Global $version = "1.2"
+Global $version = "1.3"
 
 AutoItSetOption("MustDeclareVars", 1)
 
@@ -9,8 +9,6 @@ AutoItSetOption("MustDeclareVars", 1)
 
 Opt("GUIOnEventMode", 1)
 Opt("GUIEventOptions", 1)
-Opt("TrayMenuMode", 1)
-Opt("TrayOnEventMode", 1)
 
 ; Set the initial action variables.
 
@@ -18,7 +16,6 @@ Global $size_width = "No change"
 Global $size_height = "No change"
 Global $move_horizontal = "No change"
 Global $move_vertical = "No change"
-Global $application_state = "Visible"
 
 ; Create the main window and all its controls.
 
@@ -47,13 +44,6 @@ GUICtrlSetData($move_vertical_combo, "Center|Top Edge|Bottom Edge|Top justify wi
 Global $apply_button = GUICtrlCreateButton("Apply", 35, 160, 75, 25)
 Global $close_button = GUICtrlCreateButton("Close", 130, 160, 75, 25)
 
-; Build the tray menu.
-
-Global $show_hide_tray_menu = TrayCreateItem("Hide")
-Global $exit_tray_menu = TrayCreateItem("Exit")
-
-TrayItemSetState($show_hide_tray_menu, $TRAY_ENABLE + $TRAY_DEFAULT)
-
 ; Specify the event handlers.
 
 GUICtrlSetOnEvent($size_width_combo, "WidthChanged")
@@ -64,10 +54,8 @@ GUICtrlSetOnEvent($move_vertical_combo, "MoveVerticalChanged")
 GUICtrlSetOnEvent($apply_button, "ApplyChanges")
 GUICtrlSetOnEvent($close_button, "CloseApplication")
 
-TrayItemSetOnEvent($show_hide_tray_menu, "ShowHideApplication")
-TrayItemSetOnEvent($exit_tray_menu, "CloseApplication")
-
-GUISetOnEvent($GUI_EVENT_MINIMIZE, "HideApplication")
+GUISetOnEvent($GUI_EVENT_RESTORE, "RestoreApplication")
+GUISetOnEvent($GUI_EVENT_MINIMIZE, "MinimizeApplication")
 GUISetOnEvent($GUI_EVENT_CLOSE, "CloseApplication")
 
 ; Show the window and wait for events.
@@ -253,24 +241,12 @@ Func ApplyChanges()
     SoundPlay(@ScriptDir & "\ding.wav", 1)
 EndFunc
 
-Func ShowHideApplication()
-    If $application_state = "Hidden" Then
-        ShowApplication()
-    Else
-        HideApplication()
-    EndIf
+Func RestoreApplication()
+    GUISetState(@SW_RESTORE)
 EndFunc
 
-Func ShowApplication()
-    GUISetState(@SW_SHOW)
-    TrayItemSetText($show_hide_tray_menu, "Hide")
-    $application_state = "Visible"
-EndFunc
-
-Func HideApplication()
-    GUISetState(@SW_HIDE)
-    TrayItemSetText($show_hide_tray_menu, "Show")
-    $application_state = "Hidden"
+Func MinimizeApplication()
+    GUISetState(@SW_MINIMIZE)
 EndFunc
 
 Func CloseApplication()
