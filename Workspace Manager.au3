@@ -1,5 +1,5 @@
 Global $title = "Workspace Manager"
-Global $version = "1.3"
+Global $version = "1.4"
 
 AutoItSetOption("MustDeclareVars", 1)
 
@@ -10,6 +10,11 @@ AutoItSetOption("MustDeclareVars", 1)
 Opt("GUIOnEventMode", 1)
 Opt("GUIEventOptions", 1)
 
+; List of monitor coordinates and dimensions.
+
+Global $monitor_count = 0
+Global $monitor_list[1][8] ; Screen xywh and workspace xywh per monitor.
+
 ; Set the initial action variables.
 
 Global $size_width = "No change"
@@ -19,7 +24,7 @@ Global $move_vertical = "No change"
 
 ; Create the main window and all its controls.
 
-GUICreate($title, 240, 195)
+GUICreate($title & " - " & $version, 240, 195)
 
 GUICtrlCreateGroup("Size", 10, 10, 220, 70)
 
@@ -87,8 +92,12 @@ Func AskForReferenceWindow($description)
     Return AskForWindow($description, "Press Ok, then select the reference window.")
 EndFunc
 
-Func AskForTargetWindow($description)
-    Return AskForWindow($description, "Press Ok, then select the window to size and/or move.")
+Func AskForTargetMonitor()
+    Return AskForWindow("", "Press Ok, then move your mouse to the monitor where the window will reside.")
+EndFunc
+
+Func AskForTargetWindow()
+    Return AskForWindow("", "Press Ok, then select the window to size and/or move.")
 EndFunc
 
 Func AskForWindow($description, $action)
@@ -104,24 +113,44 @@ Func AskForWindow($description, $action)
     Return 1
 EndFunc
 
-Func GetDesktopWorkspacePos()
-    Local $dll_rect = DllStructCreate("long; long; long; long")
-    Local $result = DllCall("User32.dll", "int", "SystemParametersInfo", "uint", 48, "uint", 0, "ptr", DllStructGetPtr($dll_rect), "uint", 0)
-    If @error Or $result[0] = 0 Then
-        Return 0
-    EndIf
-    Local $rect[4] = [DllStructGetData($dll_rect, 1), DllStructGetData($dll_rect, 2), DllStructGetData($dll_rect, 3), DllStructGetData($dll_rect, 4)]
-    $rect[2] = $rect[2] - $rect[0]
-    $rect[3] = $rect[3] - $rect[1]
-    Return $rect
+Func GetMonitorInfo()
+    $monitor_count = 0
+    Local $monitor_callback = DllCallbackRegister("MonitorEnumProc", "int", "hwnd;hwnd;ptr;lparam")
+    DllCall("user32.dll", "int", "EnumDisplayMonitors", "hwnd", 0, "ptr", 0, "ptr", DllCallbackGetPtr($monitor_callback), "lparam", 0)
+    DllCallbackFree($monitor_callback)
+EndFunc
+
+Func MonitorEnumProc($monitor, $hdc, $rect_ptr, $lparam)
+    Local $monitor_info = DllStructCreate("dword; long; long; long; long; long; long; long; long; dword")
+    DllStructSetData($monitor_info, 1, DllStructGetSize($monitor_info))
+    DllCall("User32.dll", "bool", "GetMonitorInfo", "hwnd", $monitor, "ptr", DllStructGetPtr($monitor_info))
+    $monitor_count += 1
+    ReDim $monitor_list[$monitor_count][8]
+    $monitor_list[$monitor_count - 1][0] = DllStructGetData($monitor_info, 2)
+    $monitor_list[$monitor_count - 1][1] = DllStructGetData($monitor_info, 3)
+    $monitor_list[$monitor_count - 1][2] = DllStructGetData($monitor_info, 4) - $monitor_list[$monitor_count - 1][0]
+    $monitor_list[$monitor_count - 1][3] = DllStructGetData($monitor_info, 5) - $monitor_list[$monitor_count - 1][1]
+    $monitor_list[$monitor_count - 1][4] = DllStructGetData($monitor_info, 6)
+    $monitor_list[$monitor_count - 1][5] = DllStructGetData($monitor_info, 7)
+    $monitor_list[$monitor_count - 1][6] = DllStructGetData($monitor_info, 8) - $monitor_list[$monitor_count - 1][4]
+    $monitor_list[$monitor_count - 1][7] = DllStructGetData($monitor_info, 9) - $monitor_list[$monitor_count - 1][5]
+    Return 1
+EndFunc
+
+Func GetMonitorFromMouse()
+    Local $mouse_pos = MouseGetPos()
+    Local $monitor = 0
+    For $i = 0 To $monitor_count - 1
+        If ($mouse_pos[0] >= $monitor_list[$i][4]) And ($mouse_pos[0] < ($monitor_list[$i][4] + $monitor_list[$i][6])) And _
+           ($mouse_pos[1] >= $monitor_list[$i][5]) And ($mouse_pos[1] < ($monitor_list[$i][5] + $monitor_list[$i][7])) Then
+            $monitor = $i
+        EndIf
+    Next
+    Return $monitor
 EndFunc
 
 Func ApplyChanges()
-    Local $desktop_workspace = GetDesktopWorkspacePos()
-    If $desktop_workspace = 0 Then
-        MsgBox(0, $title, "Error:" & @CRLF & "The desktop workspace dimensions could not be determined", 60)
-        Return
-    EndIf
+    GetMonitorInfo()
 
     Local $width_reference_window
     If $size_width = "Match width of ..." Then
@@ -185,7 +214,17 @@ Func ApplyChanges()
         $vertical_reference_window = WinGetPos("")
     EndIf
 
-    If Not AskForTargetWindow("") Then
+    Local $target_monitor = 0
+    If ($monitor_count > 1) And _
+        (($move_horizontal = "Center") Or ($move_horizontal = "Left Edge") Or ($move_horizontal = "Right Edge") Or _
+         ($move_vertical = "Center") Or ($move_vertical = "Top Edge") Or ($move_vertical = "Bottom Edge")) Then
+        If Not AskForTargetMonitor() Then
+            Return
+        EndIf
+        $target_monitor = GetMonitorFromMouse()
+    EndIf
+
+    If Not AskForTargetWindow() Then
         Return
     EndIf
     Local $target_window = WinGetPos("")
@@ -204,11 +243,11 @@ Func ApplyChanges()
 
     Select
         Case $move_horizontal = "Center"
-            $target_window[0] = $desktop_workspace[0] + ($desktop_workspace[2] - $target_window[2]) / 2
+            $target_window[0] = $monitor_list[$target_monitor][4] + ($monitor_list[$target_monitor][6] - $target_window[2]) / 2
         Case $move_horizontal = "Left Edge"
-            $target_window[0] = $desktop_workspace[0]
+            $target_window[0] = $monitor_list[$target_monitor][4]
         Case $move_horizontal = "Right Edge"
-            $target_window[0] = $desktop_workspace[0] + $desktop_workspace[2] - $target_window[2]
+            $target_window[0] = $monitor_list[$target_monitor][4] + $monitor_list[$target_monitor][6] - $target_window[2]
         Case $move_horizontal = "Left justify with ..."
             $target_window[0] = $horizontal_reference_window[0]
         Case $move_horizontal = "Right justify with ..."
@@ -221,11 +260,11 @@ Func ApplyChanges()
 
     Select
         Case $move_vertical = "Center"
-            $target_window[1] = $desktop_workspace[1] + ($desktop_workspace[3] - $target_window[3]) / 2
+            $target_window[1] = $monitor_list[$target_monitor][5] + ($monitor_list[$target_monitor][7] - $target_window[3]) / 2
         Case $move_vertical = "Top Edge"
-            $target_window[1] = $desktop_workspace[1]
+            $target_window[1] = $monitor_list[$target_monitor][5]
         Case $move_vertical = "Bottom Edge"
-            $target_window[1] = $desktop_workspace[1] + $desktop_workspace[3] - $target_window[3]
+            $target_window[1] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] - $target_window[3]
         Case $move_vertical = "Top justify with ..."
             $target_window[1] = $vertical_reference_window[1]
         Case $move_vertical = "Bottom justify with ..."
