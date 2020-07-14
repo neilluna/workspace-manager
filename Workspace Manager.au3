@@ -7,6 +7,8 @@ AutoItSetOption("MustDeclareVars", 1)
 #include <ComboConstants.au3>
 #include <GUIConstantsEx.au3>
 
+#include "GUICtrlComboSetColors.au3"
+
 Opt("GUIOnEventMode", 1)
 Opt("GUIEventOptions", 1)
 
@@ -30,20 +32,24 @@ GUICtrlCreateGroup("Size", 10, 10, 220, 70)
 
 GUICtrlCreateLabel("Width", 20, 28)
 Global $size_width_combo = GUICtrlCreateCombo("No change", 90, 25, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($size_width_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_width_combo, "480|640|800|960|1024|1280|Match width of ...", "No change")
 
 GUICtrlCreateLabel("Height", 20, 53)
 Global $size_height_combo = GUICtrlCreateCombo("No change", 90, 50, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($size_height_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_height_combo, "360|480|600|720|768|960|1024|Match height of ...", "No change")
 
 GUICtrlCreateGroup("Move", 10, 85, 220, 70)
 
 GUICtrlCreateLabel("Horizontal", 20, 103)
 Global $move_horizontal_combo = GUICtrlCreateCombo("No change", 90, 100, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($move_horizontal_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_horizontal_combo, "Center|Left Edge|Right Edge|Left justify with ...|Right justify with ...|Stack to the left of ...|Stack to the right of ...", "No change")
 
 GUICtrlCreateLabel("Vertical", 20, 128)
 Global $move_vertical_combo = GUICtrlCreateCombo("No change", 90, 125, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($move_vertical_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_vertical_combo, "Center|Top Edge|Bottom Edge|Top justify with ...|Bottom justify with ...|Stack above ...|Stack below ...", "No change")
 
 Global $apply_button = GUICtrlCreateButton("Apply", 35, 160, 75, 25)

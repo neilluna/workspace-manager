@@ -268,7 +268,7 @@ EndFunc   ;==>OnAutoItExit_UDF_WM_CTLCOLORLISTBOX
 #EndRegion GUICtrlComboSetColors UDF
 
 
-Example()
+; Example()
 
 Func Example()
 
