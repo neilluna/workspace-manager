@@ -27,8 +27,12 @@ Global $move_vertical = "No change"
 ; Create the main window and all its controls.
 
 GUICreate($title & " - " & $version, 240, 195)
+GUISetBkColor($COLOR_BLACK)
+GUICtrlSetDefColor($COLOR_WHITE)
+GUICtrlSetDefBkColor($COLOR_BLACK)
 
 GUICtrlCreateGroup("Size", 10, 10, 220, 70)
+GUICtrlCreateLabel("Size", 20, 10)
 
 GUICtrlCreateLabel("Width", 20, 28)
 Global $size_width_combo = GUICtrlCreateCombo("No change", 90, 25, 130, 21, $CBS_DROPDOWNLIST)
@@ -41,6 +45,7 @@ GUICtrlComboSetColors($size_height_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_height_combo, "360|480|600|720|768|960|1024|Match height of ...", "No change")
 
 GUICtrlCreateGroup("Move", 10, 85, 220, 70)
+GUICtrlCreateLabel("Move", 20, 85)
 
 GUICtrlCreateLabel("Horizontal", 20, 103)
 Global $move_horizontal_combo = GUICtrlCreateCombo("No change", 90, 100, 130, 21, $CBS_DROPDOWNLIST)
