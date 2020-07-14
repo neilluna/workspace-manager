@@ -7,6 +7,7 @@ AutoItSetOption("MustDeclareVars", 1)
 #include <ComboConstants.au3>
 #include <GUIConstantsEx.au3>
 
+#include "ExtMsgBox.au3"
 #include "GUICtrlComboSetColors.au3"
 
 Opt("GUIOnEventMode", 1)
