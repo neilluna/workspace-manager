@@ -7,6 +7,9 @@ AutoItSetOption("MustDeclareVars", 1)
 #include <ComboConstants.au3>
 #include <GUIConstantsEx.au3>
 
+#include "ExtMsgBox.au3"
+#include "GUICtrlComboSetColors.au3"
+
 Opt("GUIOnEventMode", 1)
 Opt("GUIEventOptions", 1)
 
@@ -25,25 +28,34 @@ Global $move_vertical = "No change"
 ; Create the main window and all its controls.
 
 GUICreate($title & " - " & $version, 240, 195)
+GUISetBkColor($COLOR_BLACK)
+GUICtrlSetDefColor($COLOR_WHITE)
+GUICtrlSetDefBkColor($COLOR_BLACK)
 
 GUICtrlCreateGroup("Size", 10, 10, 220, 70)
+GUICtrlCreateLabel("Size", 20, 10)
 
 GUICtrlCreateLabel("Width", 20, 28)
 Global $size_width_combo = GUICtrlCreateCombo("No change", 90, 25, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($size_width_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_width_combo, "480|640|800|960|1024|1280|Match width of ...", "No change")
 
 GUICtrlCreateLabel("Height", 20, 53)
 Global $size_height_combo = GUICtrlCreateCombo("No change", 90, 50, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($size_height_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_height_combo, "360|480|600|720|768|960|1024|Match height of ...", "No change")
 
 GUICtrlCreateGroup("Move", 10, 85, 220, 70)
+GUICtrlCreateLabel("Move", 20, 85)
 
 GUICtrlCreateLabel("Horizontal", 20, 103)
 Global $move_horizontal_combo = GUICtrlCreateCombo("No change", 90, 100, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($move_horizontal_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_horizontal_combo, "Center|Left Edge|Right Edge|Left justify with ...|Right justify with ...|Stack to the left of ...|Stack to the right of ...", "No change")
 
 GUICtrlCreateLabel("Vertical", 20, 128)
 Global $move_vertical_combo = GUICtrlCreateCombo("No change", 90, 125, 130, 21, $CBS_DROPDOWNLIST)
+GUICtrlComboSetColors($move_vertical_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_vertical_combo, "Center|Top Edge|Bottom Edge|Top justify with ...|Bottom justify with ...|Stack above ...|Stack below ...", "No change")
 
 Global $apply_button = GUICtrlCreateButton("Apply", 35, 160, 75, 25)
@@ -105,7 +117,8 @@ Func AskForWindow($description, $action)
     If $description <> "" Then
         $prompt = $description & @CRLF & $action
     EndIf
-    Local $choice = MsgBox(1, $title, $prompt, 60)
+    _ExtMsgBoxSet(1, 0, $COLOR_BLACK, $COLOR_WHITE, -1, -1, -1, -1, "~", $COLOR_BLACK, $COLOR_WHITE)
+    Local $choice = _ExtMsgBox(0, 1, $title, $prompt, 60)
     If ($choice < 0 or $choice == 2) Then
         Return 0
     EndIf
