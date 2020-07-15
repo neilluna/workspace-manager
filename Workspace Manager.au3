@@ -20,10 +20,10 @@ Global $monitor_list[1][8] ; Screen xywh and workspace xywh per monitor.
 
 ; Set the initial action variables.
 
-Global $size_width = "No change"
-Global $size_height = "No change"
 Global $move_horizontal = "No change"
 Global $move_vertical = "No change"
+Global $size_width = "No change"
+Global $size_height = "No change"
 
 ; Create the main window and all its controls.
 
@@ -37,7 +37,7 @@ GUICtrlCreateLabel("Move", 20, 10)
 
 GUICtrlCreateLabel("Horizontal", 20, 28)
 Global $move_horizontal_combo = _
-    GUICtrlCreateCombo("No change", 90, 25, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+    GUICtrlCreateCombo($move_horizontal, 90, 25, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($move_horizontal_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_horizontal_combo, $move_horizontal)
 _GUICtrlComboBox_AddString($move_horizontal_combo, "Center")
@@ -50,7 +50,7 @@ _GUICtrlComboBox_AddString($move_horizontal_combo, "Stack to the right of ...")
 
 GUICtrlCreateLabel("Vertical", 20, 53)
 Global $move_vertical_combo = _
-    GUICtrlCreateCombo("No change", 90, 50, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+    GUICtrlCreateCombo($move_vertical, 90, 50, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($move_vertical_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_vertical_combo, $move_vertical)
 _GUICtrlComboBox_AddString($move_vertical_combo, "Center")
@@ -66,7 +66,7 @@ GUICtrlCreateLabel("Size", 20, 85)
 
 GUICtrlCreateLabel("Width", 20, 103)
 Global $size_width_combo = _
-    GUICtrlCreateCombo("No change", 90, 100, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+    GUICtrlCreateCombo($size_width, 90, 100, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($size_width_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_width_combo, $size_width)
 _GUICtrlComboBox_AddString($size_width_combo, "480")
@@ -84,7 +84,7 @@ _GUICtrlComboBox_AddString($size_width_combo, "Extend to the right edge")
 
 GUICtrlCreateLabel("Height", 20, 128)
 Global $size_height_combo = _
-    GUICtrlCreateCombo("No change", 90, 125, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+    GUICtrlCreateCombo($size_height, 90, 125, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($size_height_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($size_height_combo, $size_height)
 _GUICtrlComboBox_AddString($size_height_combo, "360")
