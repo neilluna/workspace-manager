@@ -313,6 +313,18 @@ Func ApplyChanges()
     EndIf
     Local $target_window = WinGetPos("")
 
+    If $size_width = "Match the width of ..." Then
+        $target_window[2] = $width_reference_window[2]
+    ElseIf StringIsInt($size_width) = 1 Then
+        $target_window[2] = Int($size_width)
+    EndIf
+
+    If $size_height = "Match the height of ..." Then
+        $target_window[3] = $height_reference_window[3]
+    ElseIf StringIsInt($size_height) = 1 Then
+        $target_window[3] = Int($size_height)
+    EndIf
+
     Select
         Case $move_horizontal = "Center"
             $target_window[0] = $monitor_list[$target_monitor][4] + _
@@ -353,30 +365,22 @@ Func ApplyChanges()
             $target_window[1] = $vertical_reference_window[1] + $vertical_reference_window[3]
     EndSelect
 
-    If $size_width = "Match the width of ..." Then
-        $target_window[2] = $width_reference_window[2]
-    ElseIf $size_width = "Extend to the left of ..." Then
+    If $size_width = "Extend to the left of ..." Then
         $target_window[2] = $width_reference_window[0] - $target_window[0]
     ElseIf $size_width = "Extend to the right of ..." Then
         $target_window[2] = $width_reference_window[0] + $width_reference_window[2] - $target_window[0]
     ElseIf $size_width = "Extend to the right edge" Then
         $target_window[2] = $monitor_list[$target_monitor][4] + $monitor_list[$target_monitor][6] _
         - $target_window[0]
-    ElseIf StringIsInt($size_width) = 1 Then
-        $target_window[2] = Int($size_width)
     EndIf
 
-    If $size_height = "Match the height of ..." Then
-        $target_window[3] = $height_reference_window[3]
-    ElseIf $size_height = "Extend to the top of ..." Then
+    If $size_height = "Extend to the top of ..." Then
         $target_window[3] = $height_reference_window[1] - $target_window[1]
     ElseIf $size_height = "Extend to the bottom of ..." Then
         $target_window[3] = $height_reference_window[1] + $height_reference_window[3] - $target_window[1]
     ElseIf $size_height = "Extend to the bottom edge" Then
         $target_window[3] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] _
         - $target_window[1]
-    ElseIf StringIsInt($size_height) = 1 Then
-        $target_window[3] = Int($size_height)
     EndIf
 
     WinMove("", "", $target_window[0], $target_window[1], $target_window[2], $target_window[3])
