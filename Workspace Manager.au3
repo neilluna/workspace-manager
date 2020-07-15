@@ -54,8 +54,8 @@ Global $move_vertical_combo = _
 GUICtrlComboSetColors($move_vertical_combo, $COLOR_BLACK, $COLOR_WHITE)
 GUICtrlSetData($move_vertical_combo, $move_vertical)
 _GUICtrlComboBox_AddString($move_vertical_combo, "Center")
-_GUICtrlComboBox_AddString($move_vertical_combo, "Top Edge")
-_GUICtrlComboBox_AddString($move_vertical_combo, "Bottom Edge")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Top edge")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Bottom edge")
 _GUICtrlComboBox_AddString($move_vertical_combo, "Top justify with ...")
 _GUICtrlComboBox_AddString($move_vertical_combo, "Bottom justify with ...")
 _GUICtrlComboBox_AddString($move_vertical_combo, "Stack above ...")
@@ -300,8 +300,8 @@ Func ApplyChanges()
          ($move_horizontal = "Right edge") Or _
          ($size_height = "Extend to the bottom edge") Or _
          ($move_vertical = "Center") Or _
-         ($move_vertical = "Top Edge") Or _
-         ($move_vertical = "Bottom Edge")) Then
+         ($move_vertical = "Top edge") Or _
+         ($move_vertical = "Bottom edge")) Then
         If Not AskForTargetMonitor() Then
             Return
         EndIf
@@ -337,9 +337,9 @@ Func ApplyChanges()
         Case $move_vertical = "Center"
             $target_window[1] = $monitor_list[$target_monitor][5] + _
                 ($monitor_list[$target_monitor][7] - $target_window[3]) / 2
-        Case $move_vertical = "Top Edge"
+        Case $move_vertical = "Top edge"
             $target_window[1] = $monitor_list[$target_monitor][5]
-        Case $move_vertical = "Bottom Edge"
+        Case $move_vertical = "Bottom edge"
             $target_window[1] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] _
             - $target_window[3]
         Case $move_vertical = "Top justify with ..."
