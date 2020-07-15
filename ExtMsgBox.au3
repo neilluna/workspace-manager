@@ -26,11 +26,11 @@ Global Const $EMB_ICONINFO = 64 ; Icon consisting of an 'i' in a circle
 
 ; #GLOBAL VARIABLES# =================================================================================================
 
-Global $g_aEMB_Settings[14]
+Global $g_aEMB_Settings[16]
 ; [0] = Style			[6]  = Max Width              [12] = Title bar reduction
 ; [1] = Justification	[7]  = Absolute Width         [13] = Focused button character
-; [2] = Back Colour		[8]  = Default Back Colour
-; [3] = Text Colour		[9]  = Default Text Colour
+; [2] = Back Colour		[8]  = Default Back Colour    [14] = Button Back Colour
+; [3] = Text Colour		[9]  = Default Text Colour    [15] = Button Text Colour
 ; [4] = Font Size		[10] = Default Font Size
 ; [5] = Font Name		[11] = Default Font Name
 ;
@@ -81,7 +81,7 @@ $g_aEMB_Settings[13] = "~"
 ; #FUNCTION# =========================================================================================================
 ; Name...........: _ExtMsgBoxSet
 ; Description ...: Sets the GUI style, justification, colours, font and max width for subsequent _ExtMsgBox function calls
-; Syntax.........: _ExtMsgBoxSet($iStyle, $iJust, [$iBkCol, [$iCol, [$sFont_Size, [$iFont_Name, [$iWidth, [ $iWidth_Abs, $sFocus_Char]]]]]]])
+; Syntax.........: _ExtMsgBoxSet($iStyle, $iJust, [$iBkCol, [$iCol, [$sFont_Size, [$iFont_Name, [$iWidth, [ $iWidth_Abs, $sFocus_Char, [$iBtnBkCol, [$iBtnCol]]]]]]]]])
 ; Parameters ....: $iStyle       -> 0 (Default) - Taskbar Button, TOPMOST, button in user font, no tab expansion,
 ;                                       no checkbox, titlebar icon, active closure [X] and SysMenu close
 ;                                   Combine following to change:
@@ -104,6 +104,8 @@ $g_aEMB_Settings[13] = "~"
 ;                                       EMB will expand to this value to accommodate long unbroken character strings
 ;                                       Forced to $iWidth value if less
 ;                   $sFocus_Char -> Character to define focused button. Default = "~"
+;                   $iBtnBkCol   -> The colour for the message box button background.
+;                   $iBtnCol     -> The colour for the message box button text.
 ; Requirement(s).: v3.2.12.1 or higher
 ; Return values .: Success - Returns 1
 ;                  Failure - Returns 0 and sets @error to 1 with @extended set to incorrect parameter index number
@@ -113,7 +115,7 @@ $g_aEMB_Settings[13] = "~"
 ; Author ........: Melba23
 ; Example........; Yes
 ;=====================================================================================================================
-Func _ExtMsgBoxSet($iStyle = -1, $iJust = -1, $iBkCol = -1, $iCol = -1, $iFont_Size = -1, $sFont_Name = -1, $iWidth = -1, $iWidth_Abs = -1, $sFocus_Char = "~")
+Func _ExtMsgBoxSet($iStyle = -1, $iJust = -1, $iBkCol = -1, $iCol = -1, $iFont_Size = -1, $sFont_Name = -1, $iWidth = -1, $iWidth_Abs = -1, $sFocus_Char = "~", $iBtnBkCol = -1, $iBtnCol = -1)
 
 	; Set global EMB variables to required values
 	Switch $iStyle
@@ -231,6 +233,24 @@ Func _ExtMsgBoxSet($iStyle = -1, $iJust = -1, $iBkCol = -1, $iCol = -1, $iFont_S
 			Else
 				$g_aEMB_Settings[13] = "~"
 			EndIf
+	EndSwitch
+
+	Switch $iBtnBkCol
+		Case -1
+			; Do nothing
+		Case 0 To 0xFFFFFF
+			$g_aEMB_Settings[14] = Int($iBtnBkCol)
+		Case Else
+			Return SetError(1, 9, 0)
+	EndSwitch
+
+	Switch $iBtnCol
+		Case -1
+			; Do nothing
+		Case 0 To 0xFFFFFF
+			$g_aEMB_Settings[15] = Int($iBtnCol)
+		Case Else
+			Return SetError(1, 10, 0)
 	EndSwitch
 
 	Return 1
@@ -663,6 +683,8 @@ Func _ExtMsgBox($vIcon, $vButton, $sTitle, $sText, $iTimeOut = 0, $hWin = "", $i
             EndIf
             ; Draw button
             $aButtonCID[$i + 1] = GUICtrlCreateButton($aButton_Text[$i + 1], $iButton_Xpos + ($i * ($iButton_Width + 10)), $iMsg_Height - 35, $iButton_Width, 25, $iDef_Button_Style)
+			If $g_aEMB_Settings[14] <> -1 Then GUICtrlSetBkColor($aButtonCID[$i + 1], $g_aEMB_Settings[14])
+			If $g_aEMB_Settings[15] <> -1 Then GUICtrlSetColor($aButtonCID[$i + 1], $g_aEMB_Settings[15])
 			; Set focus if default
 			If $iDef_Button_Style Then
 				GUICtrlSetState($aButtonCID[$i + 1], 256) ; $GUI_FOCUS

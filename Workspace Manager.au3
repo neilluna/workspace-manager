@@ -117,7 +117,7 @@ Func AskForWindow($description, $action)
     If $description <> "" Then
         $prompt = $description & @CRLF & $action
     EndIf
-    _ExtMsgBoxSet(1, 0, $COLOR_BLACK, $COLOR_WHITE)
+    _ExtMsgBoxSet(1, 0, $COLOR_BLACK, $COLOR_WHITE, -1, -1, -1, -1, "~", $COLOR_BLACK, $COLOR_WHITE)
     Local $choice = _ExtMsgBox(0, 1, $title, $prompt, 60)
     If ($choice < 0 or $choice == 2) Then
         Return 0
