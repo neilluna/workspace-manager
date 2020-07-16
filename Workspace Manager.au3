@@ -1,5 +1,5 @@
 Global $title = "Workspace Manager"
-Global $version = "1.4"
+Global $version = "1.5.0"
 
 AutoItSetOption("MustDeclareVars", 1)
 
