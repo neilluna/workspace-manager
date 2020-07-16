@@ -1,11 +1,14 @@
 Global $title = "Workspace Manager"
-Global $version = "1.4"
+Global $version = "1.5.0"
 
 AutoItSetOption("MustDeclareVars", 1)
 
 #Include <Constants.au3>
 #include <ComboConstants.au3>
 #include <GUIConstantsEx.au3>
+
+#include "ExtMsgBox.au3"
+#include "GUICtrlComboSetColors.au3"
 
 Opt("GUIOnEventMode", 1)
 Opt("GUIEventOptions", 1)
@@ -15,36 +18,103 @@ Opt("GUIEventOptions", 1)
 Global $monitor_count = 0
 Global $monitor_list[1][8] ; Screen xywh and workspace xywh per monitor.
 
+; UI colors.
+
+Global $background_color = 0x121212
+Global $control_color = 0x272727
+Global $text_color = $COLOR_WHITE
+
 ; Set the initial action variables.
 
-Global $size_width = "No change"
-Global $size_height = "No change"
 Global $move_horizontal = "No change"
 Global $move_vertical = "No change"
+Global $size_width = "No change"
+Global $size_height = "No change"
 
 ; Create the main window and all its controls.
 
 GUICreate($title & " - " & $version, 240, 195)
+GUISetBkColor($background_color)
+GUICtrlSetDefColor($text_color)
+GUICtrlSetDefBkColor($control_color)
 
-GUICtrlCreateGroup("Size", 10, 10, 220, 70)
+GUICtrlCreateGroup("Move", 10, 10, 220, 70)
+Local $move_label = GUICtrlCreateLabel("Move", 20, 10)
+GUICtrlSetBkColor($move_label, $background_color)
 
-GUICtrlCreateLabel("Width", 20, 28)
-Global $size_width_combo = GUICtrlCreateCombo("No change", 90, 25, 130, 21, $CBS_DROPDOWNLIST)
-GUICtrlSetData($size_width_combo, "480|640|800|960|1024|1280|Match width of ...", "No change")
+Local $horizontal_label = GUICtrlCreateLabel("Horizontal", 20, 28)
+GUICtrlSetBkColor($horizontal_label, $background_color)
 
-GUICtrlCreateLabel("Height", 20, 53)
-Global $size_height_combo = GUICtrlCreateCombo("No change", 90, 50, 130, 21, $CBS_DROPDOWNLIST)
-GUICtrlSetData($size_height_combo, "360|480|600|720|768|960|1024|Match height of ...", "No change")
+Global $move_horizontal_combo = _
+    GUICtrlCreateCombo($move_horizontal, 80, 25, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+GUICtrlComboSetColors($move_horizontal_combo, $control_color, $text_color)
+GUICtrlSetData($move_horizontal_combo, $move_horizontal)
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Center")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Left edge")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Right edge")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Left justify with ...")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Right justify with ...")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Stack to the left of ...")
+_GUICtrlComboBox_AddString($move_horizontal_combo, "Stack to the right of ...")
 
-GUICtrlCreateGroup("Move", 10, 85, 220, 70)
+Local $vertical_label = GUICtrlCreateLabel("Vertical", 20, 53)
+GUICtrlSetBkColor($vertical_label, $background_color)
 
-GUICtrlCreateLabel("Horizontal", 20, 103)
-Global $move_horizontal_combo = GUICtrlCreateCombo("No change", 90, 100, 130, 21, $CBS_DROPDOWNLIST)
-GUICtrlSetData($move_horizontal_combo, "Center|Left Edge|Right Edge|Left justify with ...|Right justify with ...|Stack to the left of ...|Stack to the right of ...", "No change")
+Global $move_vertical_combo = _
+    GUICtrlCreateCombo($move_vertical, 80, 50, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+GUICtrlComboSetColors($move_vertical_combo, $control_color, $text_color)
+GUICtrlSetData($move_vertical_combo, $move_vertical)
+_GUICtrlComboBox_AddString($move_vertical_combo, "Center")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Top edge")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Bottom edge")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Top justify with ...")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Bottom justify with ...")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Stack above ...")
+_GUICtrlComboBox_AddString($move_vertical_combo, "Stack below ...")
 
-GUICtrlCreateLabel("Vertical", 20, 128)
-Global $move_vertical_combo = GUICtrlCreateCombo("No change", 90, 125, 130, 21, $CBS_DROPDOWNLIST)
-GUICtrlSetData($move_vertical_combo, "Center|Top Edge|Bottom Edge|Top justify with ...|Bottom justify with ...|Stack above ...|Stack below ...", "No change")
+GUICtrlCreateGroup("Size", 10, 85, 220, 70)
+Local $size_label = GUICtrlCreateLabel("Size", 20, 85)
+GUICtrlSetBkColor($size_label, $background_color)
+
+Local $width_label = GUICtrlCreateLabel("Width", 20, 103)
+GUICtrlSetBkColor($width_label, $background_color)
+
+Global $size_width_combo = _
+    GUICtrlCreateCombo($size_width, 80, 100, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+GUICtrlComboSetColors($size_width_combo, $control_color, $text_color)
+GUICtrlSetData($size_width_combo, $size_width)
+_GUICtrlComboBox_AddString($size_width_combo, "480")
+_GUICtrlComboBox_AddString($size_width_combo, "640")
+_GUICtrlComboBox_AddString($size_width_combo, "800")
+_GUICtrlComboBox_AddString($size_width_combo, "960")
+_GUICtrlComboBox_AddString($size_width_combo, "1024")
+_GUICtrlComboBox_AddString($size_width_combo, "1280")
+_GUICtrlComboBox_AddString($size_width_combo, "1920")
+_GUICtrlComboBox_AddString($size_width_combo, "2560")
+_GUICtrlComboBox_AddString($size_width_combo, "Match the width of ...")
+_GUICtrlComboBox_AddString($size_width_combo, "Extend to the left of ...")
+_GUICtrlComboBox_AddString($size_width_combo, "Extend to the right of ...")
+_GUICtrlComboBox_AddString($size_width_combo, "Extend to the right edge")
+
+Local $height_label = GUICtrlCreateLabel("Height", 20, 128)
+GUICtrlSetBkColor($height_label, $background_color)
+
+Global $size_height_combo = _
+    GUICtrlCreateCombo($size_height, 80, 125, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
+GUICtrlComboSetColors($size_height_combo, $control_color, $text_color)
+GUICtrlSetData($size_height_combo, $size_height)
+_GUICtrlComboBox_AddString($size_height_combo, "360")
+_GUICtrlComboBox_AddString($size_height_combo, "480")
+_GUICtrlComboBox_AddString($size_height_combo, "600")
+_GUICtrlComboBox_AddString($size_height_combo, "720")
+_GUICtrlComboBox_AddString($size_height_combo, "768")
+_GUICtrlComboBox_AddString($size_height_combo, "960")
+_GUICtrlComboBox_AddString($size_height_combo, "1080")
+_GUICtrlComboBox_AddString($size_height_combo, "1440")
+_GUICtrlComboBox_AddString($size_height_combo, "Match the height of ...")
+_GUICtrlComboBox_AddString($size_height_combo, "Extend to the top of ...")
+_GUICtrlComboBox_AddString($size_height_combo, "Extend to the bottom of ...")
+_GUICtrlComboBox_AddString($size_height_combo, "Extend to the bottom edge")
 
 Global $apply_button = GUICtrlCreateButton("Apply", 35, 160, 75, 25)
 Global $close_button = GUICtrlCreateButton("Close", 130, 160, 75, 25)
@@ -72,20 +142,20 @@ WEnd
 
 ; Event handlers.
 
-Func WidthChanged()
-    $size_width = GUICtrlRead($size_width_combo)
-EndFunc
-
-Func HeightChanged()
-    $size_height = GUICtrlRead($size_height_combo)
-EndFunc
-
 Func MoveHorizontalChanged()
     $move_horizontal = GUICtrlRead($move_horizontal_combo)
 EndFunc
 
 Func MoveVerticalChanged()
     $move_vertical = GUICtrlRead($move_vertical_combo)
+EndFunc
+
+Func WidthChanged()
+    $size_width = GUICtrlRead($size_width_combo)
+EndFunc
+
+Func HeightChanged()
+    $size_height = GUICtrlRead($size_height_combo)
 EndFunc
 
 Func AskForReferenceWindow($description)
@@ -105,7 +175,8 @@ Func AskForWindow($description, $action)
     If $description <> "" Then
         $prompt = $description & @CRLF & $action
     EndIf
-    Local $choice = MsgBox(1, $title, $prompt, 60)
+    _ExtMsgBoxSet(1, 0, $background_color, $text_color, -1, -1, -1, -1, "~", $control_color, $text_color)
+    Local $choice = _ExtMsgBox(0, 1, $title, $prompt, 60)
     If ($choice < 0 or $choice == 2) Then
         Return 0
     EndIf
@@ -116,7 +187,8 @@ EndFunc
 Func GetMonitorInfo()
     $monitor_count = 0
     Local $monitor_callback = DllCallbackRegister("MonitorEnumProc", "int", "hwnd;hwnd;ptr;lparam")
-    DllCall("user32.dll", "int", "EnumDisplayMonitors", "hwnd", 0, "ptr", 0, "ptr", DllCallbackGetPtr($monitor_callback), "lparam", 0)
+    DllCall("user32.dll", "int", "EnumDisplayMonitors", "hwnd", 0, "ptr", 0, "ptr", _
+        DllCallbackGetPtr($monitor_callback), "lparam", 0)
     DllCallbackFree($monitor_callback)
 EndFunc
 
@@ -141,8 +213,10 @@ Func GetMonitorFromMouse()
     Local $mouse_pos = MouseGetPos()
     Local $monitor = 0
     For $i = 0 To $monitor_count - 1
-        If ($mouse_pos[0] >= $monitor_list[$i][4]) And ($mouse_pos[0] < ($monitor_list[$i][4] + $monitor_list[$i][6])) And _
-           ($mouse_pos[1] >= $monitor_list[$i][5]) And ($mouse_pos[1] < ($monitor_list[$i][5] + $monitor_list[$i][7])) Then
+        If ($mouse_pos[0] >= $monitor_list[$i][4]) And _
+           ($mouse_pos[0] < ($monitor_list[$i][4] + $monitor_list[$i][6])) And _
+           ($mouse_pos[1] >= $monitor_list[$i][5]) And _
+           ($mouse_pos[1] < ($monitor_list[$i][5] + $monitor_list[$i][7])) Then
             $monitor = $i
         EndIf
     Next
@@ -151,22 +225,6 @@ EndFunc
 
 Func ApplyChanges()
     GetMonitorInfo()
-
-    Local $width_reference_window
-    If $size_width = "Match width of ..." Then
-        If Not AskForReferenceWindow("Match the width of another window.") Then
-            Return
-        EndIf
-        $width_reference_window = WinGetPos("")
-    EndIf
-
-    Local $height_reference_window
-    If $size_height = "Match height of ..." Then
-        If Not AskForReferenceWindow("Match the height of another window.") Then
-            Return
-        EndIf
-        $height_reference_window = WinGetPos("")
-    EndIf
 
     Local $horizontal_reference_window
     If $move_horizontal = "Left justify with ..." Then
@@ -214,10 +272,52 @@ Func ApplyChanges()
         $vertical_reference_window = WinGetPos("")
     EndIf
 
+    Local $width_reference_window
+    If $size_width = "Match the width of ..." Then
+        If Not AskForReferenceWindow("Match the width of another window.") Then
+            Return
+        EndIf
+        $width_reference_window = WinGetPos("")
+    ElseIf $size_width = "Extend to the left of ..." Then
+        If Not AskForReferenceWindow("Extend the width to the left edge of another window.") Then
+            Return
+        EndIf
+        $width_reference_window = WinGetPos("")
+    ElseIf $size_width = "Extend to the right of ..." Then
+        If Not AskForReferenceWindow("Extend the width to the right edge of another window.") Then
+            Return
+        EndIf
+        $width_reference_window = WinGetPos("")
+    EndIf
+
+    Local $height_reference_window
+    If $size_height = "Match the height of ..." Then
+        If Not AskForReferenceWindow("Match the height of another window.") Then
+            Return
+        EndIf
+        $height_reference_window = WinGetPos("")
+    ElseIf $size_height = "Extend to the top of ..." Then
+        If Not AskForReferenceWindow("Extend the height to the top edge of another window.") Then
+            Return
+        EndIf
+        $height_reference_window = WinGetPos("")
+    ElseIf $size_height = "Extend to the bottom of ..." Then
+        If Not AskForReferenceWindow("Extend the height to the bottom edge of another window.") Then
+            Return
+        EndIf
+        $height_reference_window = WinGetPos("")
+    EndIf
+
     Local $target_monitor = 0
     If ($monitor_count > 1) And _
-        (($move_horizontal = "Center") Or ($move_horizontal = "Left Edge") Or ($move_horizontal = "Right Edge") Or _
-         ($move_vertical = "Center") Or ($move_vertical = "Top Edge") Or ($move_vertical = "Bottom Edge")) Then
+        (($size_width = "Extend to the right edge") Or _
+         ($move_horizontal = "Center") Or _
+         ($move_horizontal = "Left edge") Or _
+         ($move_horizontal = "Right edge") Or _
+         ($size_height = "Extend to the bottom edge") Or _
+         ($move_vertical = "Center") Or _
+         ($move_vertical = "Top edge") Or _
+         ($move_vertical = "Bottom edge")) Then
         If Not AskForTargetMonitor() Then
             Return
         EndIf
@@ -229,29 +329,32 @@ Func ApplyChanges()
     EndIf
     Local $target_window = WinGetPos("")
 
-    If $size_width = "Match width of ..." Then
+    If $size_width = "Match the width of ..." Then
         $target_window[2] = $width_reference_window[2]
-    ElseIf $size_width <> "No change" Then
-        $target_window[2] = $size_width
+    ElseIf StringIsInt($size_width) = 1 Then
+        $target_window[2] = Int($size_width)
     EndIf
 
-    If $size_height = "Match height of ..." Then
+    If $size_height = "Match the height of ..." Then
         $target_window[3] = $height_reference_window[3]
-    ElseIf $size_height <> "No change" Then
-        $target_window[3] = $size_height
+    ElseIf StringIsInt($size_height) = 1 Then
+        $target_window[3] = Int($size_height)
     EndIf
 
     Select
         Case $move_horizontal = "Center"
-            $target_window[0] = $monitor_list[$target_monitor][4] + ($monitor_list[$target_monitor][6] - $target_window[2]) / 2
-        Case $move_horizontal = "Left Edge"
+            $target_window[0] = $monitor_list[$target_monitor][4] + _
+                ($monitor_list[$target_monitor][6] - $target_window[2]) / 2
+        Case $move_horizontal = "Left edge"
             $target_window[0] = $monitor_list[$target_monitor][4]
-        Case $move_horizontal = "Right Edge"
-            $target_window[0] = $monitor_list[$target_monitor][4] + $monitor_list[$target_monitor][6] - $target_window[2]
+        Case $move_horizontal = "Right edge"
+            $target_window[0] = $monitor_list[$target_monitor][4] + $monitor_list[$target_monitor][6] _
+            - $target_window[2]
         Case $move_horizontal = "Left justify with ..."
             $target_window[0] = $horizontal_reference_window[0]
         Case $move_horizontal = "Right justify with ..."
-            $target_window[0] = $horizontal_reference_window[0] + $horizontal_reference_window[2] - $target_window[2]
+            $target_window[0] = $horizontal_reference_window[0] + $horizontal_reference_window[2] _
+            - $target_window[2]
         Case $move_horizontal = "Stack to the left of ..."
             $target_window[0] = $horizontal_reference_window[0] - $target_window[2]
         Case $move_horizontal = "Stack to the right of ..."
@@ -260,20 +363,41 @@ Func ApplyChanges()
 
     Select
         Case $move_vertical = "Center"
-            $target_window[1] = $monitor_list[$target_monitor][5] + ($monitor_list[$target_monitor][7] - $target_window[3]) / 2
-        Case $move_vertical = "Top Edge"
+            $target_window[1] = $monitor_list[$target_monitor][5] + _
+                ($monitor_list[$target_monitor][7] - $target_window[3]) / 2
+        Case $move_vertical = "Top edge"
             $target_window[1] = $monitor_list[$target_monitor][5]
-        Case $move_vertical = "Bottom Edge"
-            $target_window[1] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] - $target_window[3]
+        Case $move_vertical = "Bottom edge"
+            $target_window[1] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] _
+            - $target_window[3]
         Case $move_vertical = "Top justify with ..."
             $target_window[1] = $vertical_reference_window[1]
         Case $move_vertical = "Bottom justify with ..."
-            $target_window[1] = $vertical_reference_window[1] + $vertical_reference_window[3] - $target_window[3]
+            $target_window[1] = $vertical_reference_window[1] + $vertical_reference_window[3] _
+            - $target_window[3]
         Case $move_vertical = "Stack above ..."
             $target_window[1] = $vertical_reference_window[1] - $target_window[3]
         Case $move_vertical = "Stack below ..."
             $target_window[1] = $vertical_reference_window[1] + $vertical_reference_window[3]
     EndSelect
+
+    If $size_width = "Extend to the left of ..." Then
+        $target_window[2] = $width_reference_window[0] - $target_window[0]
+    ElseIf $size_width = "Extend to the right of ..." Then
+        $target_window[2] = $width_reference_window[0] + $width_reference_window[2] - $target_window[0]
+    ElseIf $size_width = "Extend to the right edge" Then
+        $target_window[2] = $monitor_list[$target_monitor][4] + $monitor_list[$target_monitor][6] _
+        - $target_window[0]
+    EndIf
+
+    If $size_height = "Extend to the top of ..." Then
+        $target_window[3] = $height_reference_window[1] - $target_window[1]
+    ElseIf $size_height = "Extend to the bottom of ..." Then
+        $target_window[3] = $height_reference_window[1] + $height_reference_window[3] - $target_window[1]
+    ElseIf $size_height = "Extend to the bottom edge" Then
+        $target_window[3] = $monitor_list[$target_monitor][5] + $monitor_list[$target_monitor][7] _
+        - $target_window[1]
+    EndIf
 
     WinMove("", "", $target_window[0], $target_window[1], $target_window[2], $target_window[3])
 
