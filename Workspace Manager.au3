@@ -18,6 +18,11 @@ Opt("GUIEventOptions", 1)
 Global $monitor_count = 0
 Global $monitor_list[1][8] ; Screen xywh and workspace xywh per monitor.
 
+; UI colors.
+
+Global $background_color = 0x272727
+Global $text_color = $COLOR_WHITE
+
 ; Set the initial action variables.
 
 Global $move_horizontal = "No change"
@@ -28,9 +33,9 @@ Global $size_height = "No change"
 ; Create the main window and all its controls.
 
 GUICreate($title & " - " & $version, 240, 195)
-GUISetBkColor($COLOR_BLACK)
-GUICtrlSetDefColor($COLOR_WHITE)
-GUICtrlSetDefBkColor($COLOR_BLACK)
+GUISetBkColor($background_color)
+GUICtrlSetDefColor($text_color)
+GUICtrlSetDefBkColor($background_color)
 
 GUICtrlCreateGroup("Move", 10, 10, 220, 70)
 GUICtrlCreateLabel("Move", 20, 10)
@@ -38,7 +43,7 @@ GUICtrlCreateLabel("Move", 20, 10)
 GUICtrlCreateLabel("Horizontal", 20, 28)
 Global $move_horizontal_combo = _
     GUICtrlCreateCombo($move_horizontal, 90, 25, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
-GUICtrlComboSetColors($move_horizontal_combo, $COLOR_BLACK, $COLOR_WHITE)
+GUICtrlComboSetColors($move_horizontal_combo, $background_color, $text_color)
 GUICtrlSetData($move_horizontal_combo, $move_horizontal)
 _GUICtrlComboBox_AddString($move_horizontal_combo, "Center")
 _GUICtrlComboBox_AddString($move_horizontal_combo, "Left edge")
@@ -51,7 +56,7 @@ _GUICtrlComboBox_AddString($move_horizontal_combo, "Stack to the right of ...")
 GUICtrlCreateLabel("Vertical", 20, 53)
 Global $move_vertical_combo = _
     GUICtrlCreateCombo($move_vertical, 90, 50, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
-GUICtrlComboSetColors($move_vertical_combo, $COLOR_BLACK, $COLOR_WHITE)
+GUICtrlComboSetColors($move_vertical_combo, $background_color, $text_color)
 GUICtrlSetData($move_vertical_combo, $move_vertical)
 _GUICtrlComboBox_AddString($move_vertical_combo, "Center")
 _GUICtrlComboBox_AddString($move_vertical_combo, "Top edge")
@@ -67,7 +72,7 @@ GUICtrlCreateLabel("Size", 20, 85)
 GUICtrlCreateLabel("Width", 20, 103)
 Global $size_width_combo = _
     GUICtrlCreateCombo($size_width, 90, 100, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
-GUICtrlComboSetColors($size_width_combo, $COLOR_BLACK, $COLOR_WHITE)
+GUICtrlComboSetColors($size_width_combo, $background_color, $text_color)
 GUICtrlSetData($size_width_combo, $size_width)
 _GUICtrlComboBox_AddString($size_width_combo, "480")
 _GUICtrlComboBox_AddString($size_width_combo, "640")
@@ -85,7 +90,7 @@ _GUICtrlComboBox_AddString($size_width_combo, "Extend to the right edge")
 GUICtrlCreateLabel("Height", 20, 128)
 Global $size_height_combo = _
     GUICtrlCreateCombo($size_height, 90, 125, 130, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
-GUICtrlComboSetColors($size_height_combo, $COLOR_BLACK, $COLOR_WHITE)
+GUICtrlComboSetColors($size_height_combo, $background_color, $text_color)
 GUICtrlSetData($size_height_combo, $size_height)
 _GUICtrlComboBox_AddString($size_height_combo, "360")
 _GUICtrlComboBox_AddString($size_height_combo, "480")
@@ -159,7 +164,7 @@ Func AskForWindow($description, $action)
     If $description <> "" Then
         $prompt = $description & @CRLF & $action
     EndIf
-    _ExtMsgBoxSet(1, 0, $COLOR_BLACK, $COLOR_WHITE, -1, -1, -1, -1, "~", $COLOR_BLACK, $COLOR_WHITE)
+    _ExtMsgBoxSet(1, 0, $background_color, $text_color, -1, -1, -1, -1, "~", $background_color, $text_color)
     Local $choice = _ExtMsgBox(0, 1, $title, $prompt, 60)
     If ($choice < 0 or $choice == 2) Then
         Return 0
