@@ -8,14 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added 1128 to the Width drop down list.
 - Added 752 to the Height drop down list.
-- The Width and Height drop down lists now get their values from text files.
 
 ### Changed
-- Changed color scheme to dark mode.
-- Implemented minor spelling and capitalization changes.
-
-### Removed
-- Removed 1024 from the Height drop down list.
+- The Width and Height drop down lists now get their values from text files.
 
 ## [1.5.0] - 2020-07-16
 ### Added
