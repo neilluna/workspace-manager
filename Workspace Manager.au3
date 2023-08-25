@@ -1,10 +1,12 @@
 Global $title = "Workspace Manager"
-Global $version = "1.5.0"
+Global $version = "1.6.0"
 
 AutoItSetOption("MustDeclareVars", 1)
 
+#include <Array.au3>
 #Include <Constants.au3>
 #include <ComboConstants.au3>
+#include <File.au3>
 #include <GUIConstantsEx.au3>
 
 #include "ExtMsgBox.au3"
@@ -83,14 +85,11 @@ Global $size_width_combo = _
     GUICtrlCreateCombo($size_width, 80, 100, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($size_width_combo, $control_color, $text_color)
 GUICtrlSetData($size_width_combo, $size_width)
-_GUICtrlComboBox_AddString($size_width_combo, "480")
-_GUICtrlComboBox_AddString($size_width_combo, "640")
-_GUICtrlComboBox_AddString($size_width_combo, "800")
-_GUICtrlComboBox_AddString($size_width_combo, "960")
-_GUICtrlComboBox_AddString($size_width_combo, "1024")
-_GUICtrlComboBox_AddString($size_width_combo, "1280")
-_GUICtrlComboBox_AddString($size_width_combo, "1920")
-_GUICtrlComboBox_AddString($size_width_combo, "2560")
+Local $width_values
+_FileReadToArray(@ScriptDir & "\width_values.txt", $width_values)
+For $i = 1 to UBound($width_values) -1
+    _GUICtrlComboBox_AddString($size_width_combo, $width_values[$i])
+Next
 _GUICtrlComboBox_AddString($size_width_combo, "Match the width of ...")
 _GUICtrlComboBox_AddString($size_width_combo, "Extend to the left of ...")
 _GUICtrlComboBox_AddString($size_width_combo, "Extend to the right of ...")
@@ -103,14 +102,11 @@ Global $size_height_combo = _
     GUICtrlCreateCombo($size_height, 80, 125, 140, 21, BitOR($CBS_DROPDOWNLIST, $WS_HSCROLL, $WS_VSCROLL))
 GUICtrlComboSetColors($size_height_combo, $control_color, $text_color)
 GUICtrlSetData($size_height_combo, $size_height)
-_GUICtrlComboBox_AddString($size_height_combo, "360")
-_GUICtrlComboBox_AddString($size_height_combo, "480")
-_GUICtrlComboBox_AddString($size_height_combo, "600")
-_GUICtrlComboBox_AddString($size_height_combo, "720")
-_GUICtrlComboBox_AddString($size_height_combo, "768")
-_GUICtrlComboBox_AddString($size_height_combo, "960")
-_GUICtrlComboBox_AddString($size_height_combo, "1080")
-_GUICtrlComboBox_AddString($size_height_combo, "1440")
+Local $height_values
+_FileReadToArray(@ScriptDir & "\height_values.txt", $height_values)
+For $i = 1 to UBound($height_values) -1
+    _GUICtrlComboBox_AddString($size_height_combo, $height_values[$i])
+Next
 _GUICtrlComboBox_AddString($size_height_combo, "Match the height of ...")
 _GUICtrlComboBox_AddString($size_height_combo, "Extend to the top of ...")
 _GUICtrlComboBox_AddString($size_height_combo, "Extend to the bottom of ...")
